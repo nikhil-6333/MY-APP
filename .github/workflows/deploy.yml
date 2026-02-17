@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -34,7 +35,7 @@ jobs:
       run: |
         docker push nikhilacr123.azurecr.io/my-react-app:latest
 
-    # 🚀 Deploy to Web App
+    # 🚀 Deploy to Azure Web App
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
