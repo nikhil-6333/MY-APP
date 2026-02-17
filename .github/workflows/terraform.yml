@@ -1,8 +1,9 @@
 name: Terraform Infrastructure
 
 on:
-  workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
       - 'terraform/**'
 
@@ -10,8 +11,12 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: terraform
+
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v3
 
     - name: Azure Login
@@ -23,13 +28,10 @@ jobs:
       uses: hashicorp/setup-terraform@v3
 
     - name: Terraform Init
-      working-directory: terraform
       run: terraform init
 
-    - name: Terraform Plan
-      working-directory: terraform
-      run: terraform plan
+    - name: Terraform Validate
+      run: terraform validate
 
     - name: Terraform Apply
-      working-directory: terraform
       run: terraform apply -auto-approve
