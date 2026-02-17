@@ -1,0 +1,42 @@
+name: Build and Deploy to Azure Web App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 🔐 Azure Login
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # 🐳 Login to ACR
+    - name: Login to ACR
+      run: az acr login --name nikhilacr123
+
+    # 🐳 Build Docker Image
+    - name: Build Image
+      run: |
+        docker build -t nikhilacr123.azurecr.io/my-react-app:latest .
+
+    # 📤 Push to ACR
+    - name: Push Image
+      run: |
+        docker push nikhilacr123.azurecr.io/my-react-app:latest
+
+    # 🚀 Deploy to Web App
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: reactappnikhil123
+        images: nikhilacr123.azurecr.io/my-react-app:latest

@@ -1,0 +1,5 @@
+location              = "South India"
+resource_group_name   = "Nikhil-rg2"
+acr_name              = "nikhilacr56789"
+webapp_name           = "reactappnikhil56789"
+app_service_plan_name = "nikhil-appservice-plan"
