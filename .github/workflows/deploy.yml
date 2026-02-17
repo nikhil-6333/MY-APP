@@ -1,18 +1,16 @@
-name: Build and Deploy to Azure
+name: Build and Deploy to Azure Web App
 
 on:
-  workflow_run:
-    workflows: ["Terraform Infrastructure"]
-    types:
-      - completed
+  push:
+    branches:
+      - main
 
 jobs:
   build-and-deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout code
       uses: actions/checkout@v3
 
     - name: Azure Login
@@ -21,18 +19,18 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Login to ACR
-      run: az acr login --name nikhilacr123
+      run: az acr login --name nikhilacrprod123
 
     - name: Build Docker Image
       run: |
-        docker build -t nikhilacr123.azurecr.io/my-react-app:${{ github.run_number }} .
+        docker build -t nikhilacrprod123.azurecr.io/my-react-app:latest .
 
-    - name: Push Docker Image
+    - name: Push Image
       run: |
-        docker push nikhilacr123.azurecr.io/my-react-app:${{ github.run_number }}
+        docker push nikhilacrprod123.azurecr.io/my-react-app:latest
 
     - name: Deploy to Web App
       uses: azure/webapps-deploy@v2
       with:
         app-name: reactappnikhil56789
-        images: nikhilacr123.azurecr.io/my-react-app:${{ github.run_number }}
+        images: nikhilacrprod123.azurecr.io/my-react-app:latest
