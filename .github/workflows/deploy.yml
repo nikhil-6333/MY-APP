@@ -15,54 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-    # 1️⃣ Checkout code
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    # 2️⃣ Azure Login (NO JSON METHOD)
     - name: Azure Login
       uses: azure/login@v2
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # 3️⃣ Login to ACR
-    - name: Login to Azure Container Registry
-      run: |
-        az acr login --name $ACR_NAME
+    - name: Login to ACR
+      run: az acr login --name $ACR_NAME
 
-    # 4️⃣ Build Docker Image
     - name: Build Docker Image
-      run: |
-        docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG .
+      run: docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG .
 
-    # 5️⃣ Push Docker Image
     - name: Push Docker Image
-      run: |
-        docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
-
-    # 6️⃣ Setup SSH Key
-    - name: Setup SSH Key
-      run: |
-        echo "${{ secrets.VM_SSH_KEY }}" > private_key
-        chmod 600 private_key
-
-    # 7️⃣ Deploy to Azure VM
-    - name: Deploy to Azure VM
-      run: |
-        ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
-
-        sudo docker pull $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
-
-        sudo docker stop react-container || true
-        sudo docker rm react-container || true
-
-        sudo docker run -d \
-          --name react-container \
-          -p 80:80 \
-          $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
-
-        EOF
+      run: docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
