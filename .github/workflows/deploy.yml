@@ -20,7 +20,7 @@ jobs:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    # 2️⃣ Azure Login (SERVICE PRINCIPAL - CORRECT WAY)
+    # 2️⃣ Azure Login (Correct v2 Method)
     - name: Azure Login
       uses: azure/login@v2
       with:
